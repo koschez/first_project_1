@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+    <link rel='stylesheet' href='css/main.css' />
+</head>
+<body>
+<h1>{{ usr }}</h1>
+<p>Джин приветствует Вас, {{ usr }}</p>
+<p>Можно написать Джину, чего вы хотите:</p>
+
+<div class="subscribe">
+    <form class="subscribe-form" action="/send-order" method="post">
+        <input class="subscribe-form__field" type="text" name="orderName" placeholder="Название товара">
+        <input class="subscribe-form__submit" type="submit" value="Заказать">
+    </form>
+</div>
+</body>
+</html>

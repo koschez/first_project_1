@@ -1,0 +1,82 @@
+body {
+    background-color: black;
+}
+h1 {
+    color: white;
+}
+p {
+    color: white;
+}
+
+
+
+
+/*-------------------------SUBSCRIBE STRT--------------------------------*/
+
+.subscribe {
+    height: 35px;
+    width: 100%;
+    position: relative;
+    float: left;
+}
+
+.subscribe-form__submit {
+    font-family: Muller,Arial,sans-serif;
+    font-size: 16px;
+    line-height: 25px;
+    text-align: center;
+    margin-left: 10px;
+    float: left;
+    padding: 8px 12px;
+    border: 0;
+    background: #6C6C7C;
+    color: #fff;
+    transition: background-color .2s,color .2s;
+}
+
+.subscribe-form__field {
+    -webkit-flex: 1 0 1px;
+    flex: 1 0 1px;
+    float: left;
+    margin-right: .3em;
+    color: #8f8f9b;
+    background-color: transparent;
+    padding: 6px 12px;
+    border: 2px solid #9696A2;
+    transition: border-color .2s,color .2s;
+}
+
+.subscribe-form__check{
+    line-height: 25px;
+    height: 35px;
+    width: 35px;
+    text-align: center;
+    float: left;
+    color: #8f8f9b;
+    background-color: transparent;
+    border: 2px solid #9696A2;
+    transition: border-color .2s,color .2s;
+}
+
+.subscribe-form__field, .subscribe-form__submit  {
+    font-family: "RooneySans-Regular", "Lucida Grande", "Lucida Sans Unicode", "Trebuchet MS", sans-serif;
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.subscribe-form__submit:focus, .subscribe-form__submit:hover {
+    background: #F5F5F5;
+    color: #333;
+}
+
+/*
+Проблемы:
+1) на 50% ведёт себя ещё адекватно, меньше - паддиги кнопки уменшаются
+2) больше 300% - кнопка едет под поле;
+3) шрифт дурацкий
+4) надо установить действие в HTML
+
+/*-------------------------SUBSCRIBE END--------------------------------*/
