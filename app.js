@@ -6,14 +6,12 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var http = require('http');
-//var html = require('html');
 
-//--самодеятельность:
-//var connect = require('connect');
+var cookieSession = require('cookie-session')
+var nodemailer = require('nodemailer');
+
 var session = require('express-session');
 var users = require('./routes/users');
-//самодеятельность--
-
 
 var app = express();
 
@@ -22,6 +20,7 @@ app.engine('html', require('hogan-express'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'html');
 app.use(express.static(path.join(__dirname, 'public')));
+//app.use(nodemailer);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -29,28 +28,17 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-//app.use(bcrypt-nodejs);
-//var hash = require('bcrypt-nodejs');
-
-
-//var bcrypt = require('bcrypt-nodejs');
-//var hash = bcrypt.hashSync("bacon");
-
-//--самодеятельность:
-//app.set('trust proxy', 1); // trust first proxy
 app.use(session({
-  secret: 'cat'
-  //resave: false,
-  //saveUninitialized: true,
-  //cookie: { secure: true, maxAge: 60000  },
+  secret: 'keyboard cat'
 }));
-//самодеятельность--
-var sess;
-//app.use('/', routes);
 
-require('./routes/index')(app, sess);
+
+var passport = require('passport');
+app.use(passport.initialize());
+app.use(passport.session());
+require('./modules/passport')(passport, session);
+require('./routes/index')(app, session);
+require('./routes/auth.google.routes.js')(app, passport);
 
 
 app.use('/users', users);

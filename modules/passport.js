@@ -2,7 +2,7 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 
 var configAuth = require('../config/auth.google');
-var person = require('../schemas/person.schema');
+var person = require('../schemas/user.schema.js');
 
 module.exports = function(passport, sess) {
 
@@ -24,7 +24,7 @@ module.exports = function(passport, sess) {
             profileFields: ['id', 'email', 'photos', 'gender', 'link', 'locale', 'name', 'timezone', 'updated_time', 'verified']
         },
         function(accessToken, refreshToken, profile, done) {
-            console.log(profile);
+            //console.log(profile);
             process.nextTick(function(){
                 person.findOne({'facebook.id': profile.id}, function(err, user){
 
@@ -60,6 +60,8 @@ module.exports = function(passport, sess) {
             callbackURL: configAuth.googleAuth.callbackURL
         },
         function(accessToken, refreshToken, profile, done) {
+            console.log("----------------------------");
+            console.log(profile);
             process.nextTick(function(){
                 person.find({'email': { $in: profile.emails[0].value}}, function(err, user){
                     if(err)

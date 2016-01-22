@@ -1,22 +1,20 @@
 module.exports = function(app, passport) {
-    //console.log(passport);
 
     app.get('/profile', isLoggedIn, function(req, res){
-        //res.render('profile.ejs', { user: req.user });
         res.json(req.user);
     });
 
     app.get('/login/facebook', passport.authenticate('facebook', {scope: ['email']}));
 
     app.get('/login/facebook/callback',
-        passport.authenticate('facebook', { successRedirect: '/',
-            failureRedirect: '/' }));
+        passport.authenticate('facebook', { successRedirect: '/session_id',
+            failureRedirect: '/login' }));
 
     app.get('/login/google', passport.authenticate('google', {scope: ['profile', 'email']}));
 
     app.get('/login/google/callback',
-        passport.authenticate('google', { successRedirect: '/',
-            failureRedirect: '/' }));
+        passport.authenticate('google', { successRedirect: '/session_id',
+            failureRedirect: '/login' } ));
 
 };
 function isLoggedIn(req, res, next) {

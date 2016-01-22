@@ -1,8 +1,9 @@
 var mongoose = require('mongoose');
 var hash = require ('../modules/pass.hash.js')
-var PasswordHash;
-//var passwordHash = require ('../modules/pass.hash.js')
-//var router = express.Router();
+var local_pass_parameter = 'aAbB'
+var passport = require('passport');
+var user = require('../schemas/user.schema.js')
+var senmail = require ('../modules/mail.send.js')
 
 /* GET home page. */
 module.exports = function(app, sess) {
@@ -15,26 +16,24 @@ module.exports = function(app, sess) {
     res.render('index', { title: 'Express' });
   });
 
-//--самодеятельность:
   app.post('/reg_page', function (req, res){
     res.render('reg_page', { title: 'registration' });
   });
+
   app.get('/reg_page', function (req, res){
     res.render('reg_page', { title: 'registration' });
   });
 
-  var newUser = new mongoose.Schema({
-    email: String,
-    pass: String,
-    nick: String
+  app.post('/send_mail', function(req, res){
+    senmail.sendMail(req.body.email, function(err, info){
+      res.json('sent');
+    })
   });
-
-  var user = mongoose.model('user', newUser);
 
   app.post('/register', function (req, res){
 
     var email = req.body.email;
-    var pass = req.body.pass;
+    var pass = req.body.pass + local_pass_parameter;
     var nick = req.body.nick;
 
     user.find({email: email}, function(err, user){
@@ -47,7 +46,12 @@ module.exports = function(app, sess) {
       }
     });
 
+    var hashed_pass = hash.hash(pass, function (err, hashed) {
+      hashed_pass = hashed
+    });
+
     function register () {
+
       if (pass.length < 6) {
         console.log('REGISTER FAILED [pass.length]: ' + pass.length)
         res.send('Password is too short. Try again!');
@@ -55,16 +59,12 @@ module.exports = function(app, sess) {
       }
       newUser = {
         email: email,
-        pass: pass,
+        pass: hashed_pass,
         nick: nick
       };
 
-
-      console.log(hash(pass, function(err, hashed) {
-      }));
-
       new user(newUser).save(function (err, data) {
-        console.log('[REGISTERED user] with email: ' + (email) + ' ,pass: ' + (pass) + ' ,nick: ' + nick)
+        console.log('[REGISTERED user] with email: ' + (email) + ' ,pass: ' + (hashed_pass) + ' ,nick: ' + nick)
         res.json(data)
       });
 
@@ -80,23 +80,27 @@ module.exports = function(app, sess) {
   app.post('/login', function (req, res){
 
     var email = req.body.email;
-    var pass = req.body.pass;
+    var pass = req.body.pass + local_pass_parameter;
+
+    var hashed_pass = hash.hash(pass, function (err, hashed) {
+      hashed_pass = hashed
+    });
 
     user.find({email: email}, function(err, user){
       if (user[0]) {
-        if (pass == user[0].pass) {
-          sess = req.session;
-          sess._id = user[0]._id;
-          sess.userEmail = user[0].email;
-          remember_me();
-          res.json(user);
-        } else if (pass.length < 6) {
-          console.log('LOGIN FAILED BY [pass.length]: ' + pass.length)
-          res.send('Incorrect enter. Password can not be shorter than 6 symbols!')
-        } else if (pass != user[0].pass){
-          console.log('LOGIN FAILED BY [pass]: ' + pass)
-          res.send('Pass is incorrect!');
-        }
+        hash.compare(pass, user[0].pass, function (err, result) {
+          if (result == true) {
+            sess = req.session;
+            sess._id = user[0]._id;
+            sess.userEmail = user[0].email;
+            remember_me();
+            res.json(user[0]);
+          } else if (result == false) {
+            console.log('LOGIN FAILED BY [pass]: ' + pass)
+            res.send('Pass is incorrect!');
+          }
+        });
+
       } else {
         console.log('LOGIN FAILED BY [email]: ' + email)// + ' [pass]: ' + pass)
         res.send('User with this email not exists!');
@@ -119,7 +123,7 @@ module.exports = function(app, sess) {
   });
 
   app.get('/session_id', function(req, res){
-    //res.json(req.session);
+    console.log("here");
     res.json([req.session, req.sessionID]);
   });
 
